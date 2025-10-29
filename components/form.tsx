@@ -7,10 +7,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-export function Form() {
-  const [taskDetails, setTaskDetails] = useState<Partial<Task>>({
+export function Form(props: { setTasks: any; tasks: Record<number, Task> }) {
+  const { tasks, setTasks } = props;
+  const [taskDetails, setTaskDetails] = useState<Task>({
+    id: "",
     title: "",
     description: "",
+    status: "active",
   });
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
@@ -20,7 +23,22 @@ export function Form() {
       [field]: value,
     }));
   };
-  const handleSubmit = () => {};
+  const handleSubmit = () => {
+    if (taskDetails.title) {
+      setTasks({
+        ...tasks,
+        [Object.keys(tasks).length]: {
+          ...taskDetails,
+          id: Object.keys(tasks).length.toString(),
+          date: new Date().toISOString().split("T")[0],
+        },
+      });
+    }
+
+    setTaskDetails({ id: "", title: "", description: "", status: "active" });
+
+    // required input handling
+  };
   return (
     <View style={styles.mainContainer}>
       <Text style={styles.label}>Task Title</Text>
@@ -34,9 +52,9 @@ export function Form() {
         onSubmitEditing={handleSubmit}
       />
 
-      <Text style={styles.label}>Description</Text>
+      <Text style={styles.label}>Description (optional)</Text>
       <TextInput
-        placeholder="Enter task description (optional)"
+        placeholder="Add brief description"
         style={[
           styles.input,
           //   styles.textArea,
@@ -59,32 +77,40 @@ export function Form() {
 }
 const styles = StyleSheet.create({
   mainContainer: {
-    padding: 16,
+    padding: 6,
   },
 
   label: {
     fontSize: 15,
-    color: "#ddd",
+    color: "#333",
+    fontWeight: 500,
+    margin: 4,
   },
   input: {
     transitionDelay: "0",
     transitionDuration: "1s",
     transitionTimingFunction: "ease",
-
     width: "100%",
-
+    borderWidth: 1,
     padding: 12,
+    shadowColor: "#ddd",
+    shadowOffset: { width: 2, height: 2 },
+    shadowRadius: 12,
+    shadowOpacity: 0.5,
     borderRadius: 8,
-    outlineColor: "rgba(0, 70, 255, 1)",
+    borderColor: "#aaa",
+    outlineColor: "transparent",
     fontSize: 16,
     marginBottom: 12,
     backgroundColor: "white",
   },
   button: {
-    backgroundColor: "#004AFF",
-    padding: 15,
+    backgroundColor: "#00aAFF",
+    padding: 12,
     borderRadius: 8,
     alignItems: "center",
+    marginTop: 6,
+    marginBottom: 0,
   },
   buttonText: {
     color: "white",
@@ -92,11 +118,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   inputFocused: {
-    // transitionDelay: "0",
-    // transitionDuration: "1s",
-    // transitionTimingFunction: "ease",
     outlineWidth: 3,
     outlineColor: "rgba(0, 70, 255, 0.5)",
+    borderColor: "rgba(0, 70, 255, 1)",
+    borderWidth: 1,
     shadowColor: "#004AFF",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.1,
