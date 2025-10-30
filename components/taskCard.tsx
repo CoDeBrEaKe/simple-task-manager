@@ -1,19 +1,36 @@
+import { Task } from "@/types";
 import { Ionicons } from "@expo/vector-icons"; // or react-native-vector-icons/Ionicons
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 export function TaskCard(props: {
-  id: string;
+  tasks: Record<number, Task>;
+  setTasks: any;
+  id: number;
   title: string;
   status: string;
   description: string;
   date: string;
 }) {
-  const { id, title, description, date, status } = props;
+  const { id, title, description, date, status, tasks, setTasks } = props;
   const isCompleted = status === "completed";
 
-  const setCompleted = (id: string) => {};
-  const deleteTask = (id: string) => {};
+  const setCompleted = (id: number) => {
+    const newTasks = { ...tasks };
+    newTasks[id].status == "completed"
+      ? (newTasks[id].status = "active")
+      : (newTasks[id].status = "completed");
+    setTasks({
+      ...newTasks,
+    });
+  };
+  const deleteTask = (id: number) => {
+    const newTasks = { ...tasks };
+    delete newTasks[id];
+    setTasks({
+      ...newTasks,
+    });
+  };
 
   return (
     <View style={[styles.card, isCompleted && { opacity: 0.6 }]}>
@@ -56,6 +73,7 @@ export function TaskCard(props: {
         size={20}
         color="#f87171"
         style={styles.iconRight}
+        onPress={() => deleteTask(id)}
       />
     </View>
   );

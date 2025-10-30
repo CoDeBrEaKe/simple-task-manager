@@ -1,5 +1,5 @@
 import { Task } from "@/types";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,8 +9,9 @@ import {
 } from "react-native";
 export function Form(props: { setTasks: any; tasks: Record<number, Task> }) {
   const { tasks, setTasks } = props;
+  const input = useRef<TextInput>(null);
+  // I chose object to obtain O(1) in reading and insertion and deletion
   const [taskDetails, setTaskDetails] = useState<Task>({
-    id: "",
     title: "",
     description: "",
     status: "active",
@@ -27,15 +28,29 @@ export function Form(props: { setTasks: any; tasks: Record<number, Task> }) {
     if (taskDetails.title) {
       setTasks({
         ...tasks,
-        [Object.keys(tasks).length]: {
+        // Used time to get unique values
+
+        [Date.now()]: {
           ...taskDetails,
-          id: Object.keys(tasks).length.toString(),
           date: new Date().toISOString().split("T")[0],
         },
       });
+    } else {
+      styles.inputFocused = {
+        outlineWidth: 3,
+        outlineColor: "rgba(220, 53, 69, 1)",
+        borderColor: "rgba(0, 70, 255, 1)",
+        borderWidth: 1,
+        shadowColor: "#004AFF",
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
+      };
+      input.current?.focus();
     }
 
-    setTaskDetails({ id: "", title: "", description: "", status: "active" });
+    setTaskDetails({ title: "", description: "", status: "active" });
 
     // required input handling
   };
@@ -43,6 +58,7 @@ export function Form(props: { setTasks: any; tasks: Record<number, Task> }) {
     <View style={styles.mainContainer}>
       <Text style={styles.label}>Task Title</Text>
       <TextInput
+        ref={input}
         placeholder="Enter task title..."
         style={[styles.input, focusedField === "title" && styles.inputFocused]}
         value={taskDetails.title}
@@ -58,7 +74,7 @@ export function Form(props: { setTasks: any; tasks: Record<number, Task> }) {
         style={[
           styles.input,
           //   styles.textArea,
-          focusedField === "description" && styles.inputFocused,
+          focusedField === "description" && styles.textareaFocused,
         ]}
         value={taskDetails.description}
         onChangeText={(text: string) => updateField("description", text)}
@@ -88,7 +104,7 @@ const styles = StyleSheet.create({
   },
   input: {
     transitionDelay: "0",
-    transitionDuration: "1s",
+    transitionDuration: "0.4s",
     transitionTimingFunction: "ease",
     width: "100%",
     borderWidth: 1,
@@ -116,6 +132,17 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  textareaFocused: {
+    outlineWidth: 3,
+    outlineColor: "rgba(0, 70, 255, 0.5)",
+    borderColor: "rgba(0, 70, 255, 1)",
+    borderWidth: 1,
+    shadowColor: "#004AFF",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   inputFocused: {
     outlineWidth: 3,

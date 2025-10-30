@@ -4,7 +4,7 @@ import { Form } from "@/components/form";
 import { TaskCard } from "@/components/taskCard";
 import { Task } from "@/types";
 import { useState } from "react";
-import { Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 export default function HomeScreen() {
   const [tasks, setTasks] = useState<Record<number, Task>>({});
 
@@ -17,15 +17,19 @@ export default function HomeScreen() {
       <hr style={styles.hr} />
       <Form tasks={tasks} setTasks={setTasks} />
       <hr style={styles.hr} />
-      {Object.keys(tasks).map((key: any) => (
-        <TaskCard
-          id={tasks[key].id}
-          title={tasks[key].title}
-          description={tasks[key].description!}
-          status={tasks[key].status!}
-          date={tasks[key].date!}
-        />
-      ))}
+      <ScrollView>
+        {Object.keys(tasks).map((key: any) => (
+          <TaskCard
+            id={key}
+            tasks={tasks}
+            setTasks={setTasks}
+            title={tasks[key].title}
+            description={tasks[key].description!}
+            status={tasks[key].status!}
+            date={tasks[key].date!}
+          />
+        ))}
+      </ScrollView>
     </View>
   );
 }
@@ -44,6 +48,7 @@ const styles = StyleSheet.create({
     borderColor: "transparent",
     color: "red",
     height: 0,
+    margin: 0,
     width: "100%",
   },
   mainContainer: {
