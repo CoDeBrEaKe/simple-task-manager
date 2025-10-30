@@ -17,7 +17,7 @@ export default function HomeScreen() {
       <hr style={styles.hr} />
       <Form tasks={tasks} setTasks={setTasks} />
       <hr style={styles.hr} />
-      <ScrollView>
+      <ScrollView style={styles.p}>
         {Object.keys(tasks).map((key: any) => (
           <TaskCard
             id={key}
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     height: "100%",
     flexDirection: "column",
-    padding: 20,
+    padding: 0,
     alignItems: "stretch",
     gap: 10,
   },
@@ -67,6 +67,10 @@ const styles = StyleSheet.create({
   stepContainer: {
     gap: 8,
     marginBottom: 8,
+  },
+  p: {
+    paddingLeft: 15,
+    paddingRight: 15,
   },
   reactLogo: {
     height: 178,

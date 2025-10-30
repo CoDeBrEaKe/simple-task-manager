@@ -93,7 +93,7 @@ export function Form(props: { setTasks: any; tasks: Record<number, Task> }) {
 }
 const styles = StyleSheet.create({
   mainContainer: {
-    padding: 6,
+    padding: 15,
   },
 
   label: {
