@@ -3,11 +3,33 @@ import { StyleSheet } from "react-native";
 import { Form } from "@/components/form";
 import { TaskCard } from "@/components/taskCard";
 import { Task } from "@/types";
-import { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
+
 import { ScrollView, Text, View } from "react-native";
 export default function HomeScreen() {
   const [tasks, setTasks] = useState<Record<number, Task>>({});
-
+  useEffect(() => {
+    const loadTasks = async () => {
+      try {
+        const saved = await AsyncStorage.getItem("tasks");
+        if (saved) setTasks(JSON.parse(saved));
+      } catch (err) {
+        console.log("Error loading tasks:", err);
+      }
+    };
+    loadTasks();
+  }, []);
+  useEffect(() => {
+    const saveTasks = async () => {
+      try {
+        await AsyncStorage.setItem("tasks", JSON.stringify(tasks));
+      } catch (err) {
+        console.log("Error saving tasks:", err);
+      }
+    };
+    saveTasks();
+  }, [tasks]);
   return (
     <View style={styles.mainContainer}>
       <View style={styles.titleContainer}>
@@ -18,23 +40,34 @@ export default function HomeScreen() {
       <Form tasks={tasks} setTasks={setTasks} />
       <hr style={styles.hr} />
       <ScrollView style={styles.p}>
-        {Object.keys(tasks).map((key: any) => (
-          <TaskCard
-            id={key}
-            tasks={tasks}
-            setTasks={setTasks}
-            title={tasks[key].title}
-            description={tasks[key].description!}
-            status={tasks[key].status!}
-            date={tasks[key].date!}
-          />
-        ))}
+        {Object.keys(tasks) ? (
+          Object.keys(tasks).map((key: any) => (
+            <TaskCard
+              id={key}
+              tasks={tasks}
+              setTasks={setTasks}
+              title={tasks[key].title}
+              description={tasks[key].description!}
+              status={tasks[key].status!}
+              date={tasks[key].date!}
+            />
+          ))
+        ) : (
+          <Text style={styles.emptyState}>
+            No tasks yet. Add a task above to get started!
+          </Text>
+        )}
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  emptyState: {
+    padding: 40,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   title: {
     fontWeight: 700,
     fontSize: 26,
